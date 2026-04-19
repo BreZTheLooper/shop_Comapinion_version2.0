@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop Companion — Multi-Access System</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- External Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
+
+  <!-- App Stylesheets -->
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="customer.css" />
+  <link rel="stylesheet" href="panel-extras.css" />
+</head>
+<body>
+
+<!-- ── Toast Container ── -->
+<div id="toast-container"></div>
+
+<!-- Splash overlay (logo) - reused for landing & customer panel -->
+<div id="splashOverlay" class="splash-overlay splash-hidden" aria-hidden="true">
+  <div class="splash-inner">
+    <img src="Assets/logo.png" alt="Shop Companion" class="splash-logo" />
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     LANDING / ROLE SELECTOR
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="view-landing" class="landing-screen">
+  <div class="landing-bg-grid"></div>
+  <div class="landing-content">
+    <div class="landing-brand">
+      <div class="landing-logo-wrap">
+        <img src="Assets/logo.png" alt="Shop Companion logo" class="landing-logo-img" />
+      </div>
+      <h1 class="landing-title">Shop<span>Companion</span></h1>
+      <p class="landing-tagline">Choose your access point to continue</p>
+    </div>
+
+    <div class="role-grid">
+
+      <!-- Admin Card -->
+      <button class="role-card" onclick="selectRole('admin')" data-role="admin">
+        <div class="role-icon-wrap" style="--rc:#1a6bff">
+          <span class="role-icon">⚙️</span>
+        </div>
+        <div class="role-info">
+          <h3>Admin</h3>
+          <p>System management, retailer accounts &amp; revenue</p>
+        </div>
+        <div class="role-arrow">→</div>
+      </button>
+
+      <!-- Client Card -->
+      <button class="role-card" onclick="selectRole('client')" data-role="client">
+        <div class="role-icon-wrap" style="--rc:#1de98b">
+          <span class="role-icon">🏪</span>
+        </div>
+        <div class="role-info">
+          <h3>Client</h3>
+          <p>Retailer dashboard, inventory &amp; store analytics</p>
+        </div>
+        <div class="role-arrow">→</div>
+      </button>
+
+      <!-- Cashier Card -->
+      <button class="role-card" onclick="selectRole('cashier')" data-role="cashier">
+        <div class="role-icon-wrap" style="--rc:#ffd94d">
+          <span class="role-icon">💳</span>
+        </div>
+        <div class="role-info">
+          <h3>Cashier</h3>
+          <p>POS checkout, barcode scan &amp; customer QR</p>
+        </div>
+        <div class="role-arrow">→</div>
+      </button>
+
+      <!-- Customer Card -->
+      <button class="role-card" onclick="selectRole('customer')" data-role="customer">
+        <div class="role-icon-wrap" style="--rc:#ff4f6a">
+          <span class="role-icon">🛍️</span>
+        </div>
+        <div class="role-info">
+          <h3>Customer</h3>
+          <p>Browse shop, cart, lists &amp; QR checkout</p>
+        </div>
+        <div class="role-arrow">→</div>
+      </button>
+
+    </div>
+
+    <p class="landing-version">Shop Companion v2.0 &middot; <a href="#" onclick="clearAllData()" style="color:var(--gray-400)">Reset Demo Data</a></p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     ADMIN PANEL
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="view-admin" class="hidden">
+  <div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon" onclick="toggleSidebar('adminSidebar')" title="Toggle" style="cursor:pointer;font-size:28px">🛒</span>
+        </div>
+        <button class="sidebar-toggle" onclick="toggleSidebar('adminSidebar')">☰</button>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" onclick="adminTab('overview',this)"><span class="nav-icon">📊</span><span class="nav-label">Overview</span></a>
+        <a href="#" class="nav-item" onclick="adminTab('retailers',this)"><span class="nav-icon">🏪</span><span class="nav-label">Retailers</span></a>
+        <a href="#" class="nav-item" onclick="adminTab('subscriptions',this)"><span class="nav-icon">💎</span><span class="nav-label">Subscriptions</span></a>
+        <a href="#" class="nav-item" onclick="adminTab('revenue',this)"><span class="nav-icon">💰</span><span class="nav-label">Revenue</span></a>
+        <a href="#" class="nav-item" onclick="adminTab('analytics',this)"><span class="nav-icon">📈</span><span class="nav-label">Analytics</span></a>
+        <a href="#" class="nav-item" onclick="adminTab('access-control',this)"><span class="nav-icon">🔐</span><span class="nav-label">Access Control</span></a>
+      </nav>
+      <a href="#" class="nav-switch-btn" onclick="goHome()"><span>🏠</span><span>Back to Home</span></a>
+    </aside>
+
+    <!-- Main -->
+    <main class="admin-main" id="adminMain">
+      <div class="admin-top-right">
+        <button id="themeToggleAdmin" class="btn btn-ghost btn-sm" onclick="toggleTheme()">☀️</button>
+      </div>
+
+      <!-- Overview -->
+      <section class="tab-panel active" id="atab-overview">
+        <div class="page-header">
+          <div>
+            <h1>Admin Overview</h1>
+            <p class="page-subtitle">System health &amp; platform summary</p>
+          </div>
+          <span class="admin-badge">⚙️ Developer Console</span>
+        </div>
+        <div class="stats-grid" id="adminStatsGrid"></div>
+        <div class="dashboard-grid">
+          <div class="card">
+            <h3>Server Status</h3>
+            <div class="divider"></div>
+            <div id="serverStatusPanel"></div>
+          </div>
+          <div class="card">
+            <h3>Recent Activity Log</h3>
+            <div class="divider"></div>
+            <div id="adminActivityLog"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Retailers -->
+      <section class="tab-panel hidden" id="atab-retailers">
+        <div class="page-header">
+          <div>
+            <h1>Retailers</h1>
+            <p class="page-subtitle">Manage retailer accounts &amp; access</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" onclick="openModal('modalAddRetailer')">+ Add Retailer</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <input class="input" type="text" placeholder="Search retailers…" oninput="filterRetailers(this.value)" style="max-width:280px" />
+          <select class="input" onchange="filterRetailersByStatus(this.value)" style="max-width:180px">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="expired">Expired</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+        <div id="retailersTable"></div>
+      </section>
+
+      <!-- Subscriptions -->
+      <section class="tab-panel hidden" id="atab-subscriptions">
+        <div class="page-header">
+          <div>
+            <h1>Subscription Plans</h1>
+            <p class="page-subtitle">Manage pricing tiers &amp; features</p>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('modalEditPlan')">+ New Plan</button>
+        </div>
+        <div id="subscriptionPlansGrid"></div>
+        <h3 style="margin:28px 0 14px">Active Subscriptions</h3>
+        <div id="activeSubsTable"></div>
+      </section>
+
+      <!-- Revenue -->
+      <section class="tab-panel hidden" id="atab-revenue">
+        <div class="page-header">
+          <div><h1>Revenue Dashboard</h1><p class="page-subtitle">Monthly subscription revenue &amp; payments</p></div>
+        </div>
+        <div class="stats-grid" id="revenueStatsGrid"></div>
+        <div class="card" style="margin-bottom:20px">
+          <h3>Monthly Revenue</h3>
+          <div class="divider"></div>
+          <div id="revenueChart" style="padding:16px 0"></div>
+        </div>
+        <div class="card">
+          <h3>Payment History</h3>
+          <div class="divider"></div>
+          <div id="paymentHistoryTable"></div>
+        </div>
+      </section>
+
+      <!-- Analytics -->
+      <section class="tab-panel hidden" id="atab-analytics">
+        <div class="page-header"><div><h1>System Analytics</h1><p class="page-subtitle">Uptime, traffic &amp; usage metrics</p></div></div>
+        <div class="stats-grid" id="analyticsStatsGrid"></div>
+        <div class="dashboard-grid">
+          <div class="card">
+            <h3>Uptime (Last 30 Days)</h3>
+            <div class="divider"></div>
+            <div id="uptimeChart"></div>
+          </div>
+          <div class="card">
+            <h3>Access Logs</h3>
+            <div class="divider"></div>
+            <div id="accessLogsTable"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Access Control -->
+      <section class="tab-panel hidden" id="atab-access-control">
+        <div class="page-header"><div><h1>Access Control</h1><p class="page-subtitle">Generate &amp; manage access tokens</p></div></div>
+        <div class="dashboard-grid">
+          <div class="card">
+            <h3>Generate Customer Access QR</h3>
+            <div class="divider"></div>
+            <div class="form-group">
+              <label class="label">Expiry Duration</label>
+              <select class="input" id="caExpiry">
+                <option value="10">10 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="60">1 hour</option>
+                <option value="1440">24 hours</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="generateCustomerAccess()">Generate QR</button>
+            <div id="caOutput" style="margin-top:16px"></div>
+          </div>
+          <div class="card">
+            <h3>Active Tokens</h3>
+            <div class="divider"></div>
+            <div id="caList"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- ADMIN: Add Retailer Modal -->
+<div id="modalAddRetailer" class="modal hidden">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-header"><h3>Add New Retailer</h3><button class="modal-close" onclick="closeModal('modalAddRetailer')">✕</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="label">Client Name</label><input class="input" id="rClientName" placeholder="Juan Dela Cruz" /></div>
+      <div class="form-group"><label class="label">Store Name</label><input class="input" id="rStoreName" placeholder="Juan's Grocery" /></div>
+      <div class="form-group"><label class="label">Location</label><input class="input" id="rLocation" placeholder="Quezon City, Metro Manila" /></div>
+      <div class="form-group"><label class="label">Contact Number</label><input class="input" id="rContact" placeholder="09171234567" /></div>
+      <div class="form-group"><label class="label">Gmail</label><input class="input" id="rGmail" placeholder="retailer@gmail.com" type="email" /></div>
+      <div class="form-group"><label class="label">Subscription Plan</label>
+        <select class="input" id="rPlan">
+          <option value="basic">Basic — ₱499/mo</option>
+          <option value="standard">Standard — ₱999/mo</option>
+          <option value="premium">Premium — ₱1,999/mo</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddRetailer')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveRetailer()">Add Retailer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN: Edit Plan Modal -->
+<div id="modalEditPlan" class="modal hidden">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-header"><h3>Edit Subscription Plan</h3><button class="modal-close" onclick="closeModal('modalEditPlan')">✕</button></div>
+    <div class="form-group"><label class="label">Plan Name</label><input class="input" id="planName" placeholder="e.g. Premium" /></div>
+    <div class="form-group"><label class="label">Price (₱/month)</label><input class="input" type="number" id="planPrice" placeholder="999" /></div>
+    <div class="form-group"><label class="label">Max Products</label><input class="input" type="number" id="planMaxProducts" placeholder="500" /></div>
+    <div class="form-group"><label class="label">Features (comma-separated)</label><input class="input" id="planFeatures" placeholder="Barcode scanning, Analytics, QR checkout" /></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalEditPlan')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePlan()">Save Plan</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CLIENT (RETAILER) PANEL
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="view-client" class="hidden">
+  <div class="admin-layout">
+
+    <aside class="sidebar" id="clientSidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon" onclick="toggleSidebar('clientSidebar')" style="cursor:pointer;font-size:28px">🏪</span>
+        </div>
+        <button class="sidebar-toggle" onclick="toggleSidebar('clientSidebar')">☰</button>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" onclick="clientTab('store-dash',this)"><span class="nav-icon">📊</span><span class="nav-label">Store Dashboard</span></a>
+        <a href="#" class="nav-item" onclick="clientTab('inventory',this)"><span class="nav-icon">📦</span><span class="nav-label">Inventory</span></a>
+        <a href="#" class="nav-item" onclick="clientTab('customers',this)"><span class="nav-icon">👥</span><span class="nav-label">Customers</span></a>
+        <a href="#" class="nav-item" onclick="clientTab('orders-hist',this)"><span class="nav-icon">📋</span><span class="nav-label">Order History</span></a>
+        <a href="#" class="nav-item" onclick="clientTab('account',this)"><span class="nav-icon">👤</span><span class="nav-label">My Account</span></a>
+      </nav>
+      <a href="#" class="nav-switch-btn" onclick="goHome()"><span>🏠</span><span>Back to Home</span></a>
+    </aside>
+
+    <main class="admin-main" id="clientMain">
+      <div class="admin-top-right">
+        <button class="btn btn-ghost btn-sm" onclick="toggleTheme()">☀️</button>
+      </div>
+
+      <!-- Store Dashboard -->
+      <section class="tab-panel active" id="ctab-store-dash">
+        <div class="page-header">
+          <div><h1>Store Dashboard</h1><p class="page-subtitle">Revenue &amp; performance at a glance</p></div>
+          <div class="header-actions">
+            <select class="input" id="revPeriod" onchange="renderClientDash()" style="max-width:160px">
+              <option value="daily">Today</option>
+              <option value="weekly" selected>This Week</option>
+              <option value="monthly">This Month</option>
+            </select>
+          </div>
+        </div>
+        <div class="stats-grid" id="clientStatsGrid"></div>
+        <div class="dashboard-grid">
+          <div class="card">
+            <h3>Best-Selling Products</h3>
+            <div class="divider"></div>
+            <div id="bestSellersChart"></div>
+          </div>
+          <div class="card">
+            <h3>Low Stock Alerts</h3>
+            <div class="divider"></div>
+            <div id="clientLowStock"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Inventory -->
+      <section class="tab-panel hidden" id="ctab-inventory">
+        <div class="page-header">
+          <div><h1>Inventory</h1><p class="page-subtitle">Manage products, stock &amp; categories</p></div>
+          <div class="header-actions">
+            <button class="btn btn-ghost btn-sm" onclick="openScannerModal('client-barcode')">📷 Scan</button>
+            <button class="btn btn-primary" onclick="openModal('modalAddProduct')">+ Add Product</button>
+          </div>
+        </div>
+
+        <!-- Filter / Sort bar -->
+        <div class="filter-bar">
+          <input class="input" type="text" placeholder="Search products…" oninput="filterInventory(this.value)" style="max-width:240px" />
+          <select class="input" id="filterCategory" onchange="filterInventory()" style="max-width:180px"><option value="">All Categories</option></select>
+          <select class="input" id="sortInventory" onchange="filterInventory()" style="max-width:180px">
+            <option value="name">Sort: Name</option>
+            <option value="stock">Sort: Stock</option>
+            <option value="price">Sort: Price</option>
+            <option value="expiry">Sort: Expiry</option>
+            <option value="category">Sort: Category</option>
+          </select>
+          <select class="input" id="filterAvailability" onchange="filterInventory()" style="max-width:160px">
+            <option value="">All Availability</option>
+            <option value="instock">In Stock</option>
+            <option value="low">Low Stock</option>
+            <option value="out">Out of Stock</option>
+          </select>
+        </div>
+
+        <div id="inventoryTable"></div>
+      </section>
+
+      <!-- Customers -->
+      <section class="tab-panel hidden" id="ctab-customers">
+        <div class="page-header">
+          <div><h1>Customers</h1><p class="page-subtitle">Customer account information</p></div>
+          <button class="btn btn-primary" onclick="openModal('modalAddCustomer')">+ Add Customer</button>
+        </div>
+        <div id="customersTable"></div>
+      </section>
+
+      <!-- Order History -->
+      <section class="tab-panel hidden" id="ctab-orders-hist">
+        <div class="page-header"><div><h1>Order History</h1><p class="page-subtitle">All completed transactions</p></div></div>
+        <div id="clientOrdersTable"></div>
+      </section>
+
+      <!-- Account -->
+      <section class="tab-panel hidden" id="ctab-account">
+        <div class="page-header"><div><h1>My Account</h1><p class="page-subtitle">Store & subscription details</p></div></div>
+        <div id="clientAccountPanel"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- Product Modal (shared by Client & Cashier) -->
+<div id="modalAddProduct" class="modal hidden">
+  <div class="modal-box" style="max-width:600px">
+    <div class="modal-header"><h3>Add Product</h3><button class="modal-close" onclick="closeModal('modalAddProduct')">✕</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="label">Product Name</label><input class="input" id="pName" placeholder="e.g. Whole Milk 1L" /></div>
+      <div class="form-group"><label class="label">Category</label>
+        <input class="input" id="pCategory" list="catList" placeholder="e.g. Dairy" />
+        <datalist id="catList"></datalist>
+      </div>
+      <div class="form-group"><label class="label">Product Type / Variant</label><input class="input" id="pType" placeholder="e.g. Full Cream" /></div>
+      <div class="form-group"><label class="label">Price (₱)</label><input class="input" type="number" id="pPrice" placeholder="75" /></div>
+      <div class="form-group"><label class="label">Stock Quantity</label><input class="input" type="number" id="pStock" placeholder="50" /></div>
+      <div class="form-group"><label class="label">Unit</label><input class="input" id="pUnit" placeholder="bottle / pack / kg" /></div>
+      <div class="form-group"><label class="label">Barcode</label>
+        <div style="display:flex;gap:8px">
+          <input class="input" id="pBarcode" placeholder="Scan or enter barcode" />
+          <button class="btn btn-ghost btn-sm" onclick="openScannerModal('product-barcode')">📷</button>
+        </div>
+      </div>
+      <div class="form-group"><label class="label">Emoji / Icon</label><input class="input" id="pEmoji" placeholder="🥛" maxlength="4" /></div>
+      <div class="form-group"><label class="label">Expiration Date</label><input class="input" type="date" id="pExpiry" /></div>
+      <div class="form-group"><label class="label">Delivery Batch #</label><input class="input" id="pBatch" placeholder="BATCH-2024-001" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddProduct')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Customer Modal -->
+<div id="modalAddCustomer" class="modal hidden">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-header"><h3>Add Customer</h3><button class="modal-close" onclick="closeModal('modalAddCustomer')">✕</button></div>
+    <div class="form-group"><label class="label">Full Name</label><input class="input" id="cName" placeholder="Maria Santos" /></div>
+    <div class="form-group"><label class="label">Email</label><input class="input" type="email" id="cEmail" placeholder="maria@gmail.com" /></div>
+    <div class="form-group"><label class="label">Phone</label><input class="input" id="cPhone" placeholder="09171234567" /></div>
+    <div class="form-group"><label class="label">Registration Code</label><input class="input" id="cRegCode" placeholder="Auto-generated" readonly /></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddCustomer')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCustomer()">Add Customer</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CASHIER PANEL
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="view-cashier" class="hidden">
+  <div class="admin-layout">
+
+    <aside class="sidebar" id="cashierSidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon" onclick="toggleSidebar('cashierSidebar')" style="cursor:pointer;font-size:28px">💳</span>
+        </div>
+        <button class="sidebar-toggle" onclick="toggleSidebar('cashierSidebar')">☰</button>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" onclick="cashierTab('pos-dash',this)"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+        <a href="#" class="nav-item" onclick="cashierTab('checkout',this)"><span class="nav-icon">🛒</span><span class="nav-label">Checkout / POS</span></a>
+        <a href="#" class="nav-item" onclick="cashierTab('cash-inventory',this)"><span class="nav-icon">📦</span><span class="nav-label">Inventory</span></a>
+        <a href="#" class="nav-item" onclick="cashierTab('cust-access',this)"><span class="nav-icon">📱</span><span class="nav-label">Customer Access</span></a>
+      </nav>
+      <a href="#" class="nav-switch-btn" onclick="goHome()"><span>🏠</span><span>Back to Home</span></a>
+    </aside>
+
+    <main class="admin-main" id="cashierMain">
+      <div class="admin-top-right">
+        <button class="btn btn-ghost btn-sm" onclick="toggleTheme()">☀️</button>
+      </div>
+
+      <!-- POS Dashboard -->
+      <section class="tab-panel active" id="xtab-pos-dash">
+        <div class="page-header"><div><h1>Cashier Dashboard</h1><p class="page-subtitle">Today's activity at a glance</p></div>
+          <span class="admin-badge" style="background:rgba(255,217,77,0.1);border-color:rgba(255,217,77,0.3);color:var(--yellow)">💳 Cashier Station</span>
+        </div>
+        <div class="stats-grid" id="cashierStatsGrid"></div>
+        <div class="dashboard-grid">
+          <div class="card">
+            <h3>Low Stock Alerts</h3>
+            <div class="divider"></div>
+            <div id="cashierLowStock"></div>
+          </div>
+          <div class="card">
+            <h3>Today's Transactions</h3>
+            <div class="divider"></div>
+            <div id="cashierTodayOrders"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Checkout / POS -->
+      <section class="tab-panel hidden" id="xtab-checkout">
+        <div class="page-header"><div><h1>Checkout / POS</h1><p class="page-subtitle">Scan customer QR or add items manually</p></div></div>
+        <div class="checkout-grid">
+          <div>
+            <!-- Scan QR -->
+            <div class="card" style="margin-bottom:20px">
+              <h3>Scan Customer QR</h3>
+              <div class="divider"></div>
+              <div class="scanner-wrap">
+                <video id="checkoutVideo" class="scanner-video" playsinline></video>
+                <div class="scanner-overlay"><div class="scanner-line"></div></div>
+              </div>
+              <div class="scanner-controls">
+                <button class="btn btn-primary" onclick="startCheckoutScan()">📷 Start QR Scan</button>
+                <button class="btn btn-ghost" onclick="stopCheckoutScan()">⏹ Stop</button>
+              </div>
+              <p class="scan-status" id="checkoutScanStatus">Waiting for scan…</p>
+            </div>
+
+            <!-- Manual add -->
+            <div class="card">
+              <h3>Add Items Manually</h3>
+              <div class="divider"></div>
+              <div style="display:flex;gap:8px;margin-bottom:12px">
+                <input class="input" id="manualBarcode" placeholder="Barcode / product ID" onkeydown="if(event.key==='Enter')manualAddItem()" />
+                <button class="btn btn-ghost btn-sm" onclick="openScannerModal('cashier-item')">📷</button>
+                <button class="btn btn-primary btn-sm" onclick="manualAddItem()">Add</button>
+              </div>
+              <div id="quickItemSearch"></div>
+            </div>
+          </div>
+
+          <!-- Order Summary -->
+          <div>
+            <div class="card">
+              <h3>Order Summary</h3>
+              <div class="divider"></div>
+              <div class="order-summary-items" id="checkoutItems"></div>
+              <div class="order-totals" id="checkoutTotals"></div>
+              <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+                <input class="input" placeholder="Voucher code" id="voucherInput" style="flex:1" />
+                <button class="btn btn-ghost btn-sm" onclick="applyVoucher()">Apply</button>
+              </div>
+              <div style="margin-top:12px;display:flex;gap:8px">
+                <button class="btn btn-danger btn-sm" onclick="clearCheckout()" style="flex:1">Clear</button>
+                <button class="btn btn-success" onclick="completeCheckout()" style="flex:2">✓ Complete Checkout</button>
+              </div>
+            </div>
+
+            <!-- Receipt -->
+            <div class="card" id="receiptPanel" style="margin-top:20px;display:none">
+              <h3>Receipt</h3>
+              <div class="divider"></div>
+              <div id="receiptContent"></div>
+              <button class="btn btn-ghost btn-sm" onclick="printReceipt()" style="margin-top:12px">🖨️ Print</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cashier Inventory -->
+      <section class="tab-panel hidden" id="xtab-cash-inventory">
+        <div class="page-header">
+          <div><h1>Inventory</h1><p class="page-subtitle">Stock overview &amp; quick updates</p></div>
+          <div class="header-actions">
+            <button class="btn btn-ghost btn-sm" onclick="openScannerModal('cashier-stock')">📷 Scan Barcode</button>
+            <button class="btn btn-primary" onclick="openModal('modalAddProduct')">+ Add Product</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <input class="input" type="text" placeholder="Search…" oninput="filterInventory(this.value)" style="max-width:240px" />
+          <select class="input" onchange="filterInventory()" id="cashierCatFilter" style="max-width:180px"><option value="">All Categories</option></select>
+        </div>
+        <div id="cashierInventoryTable"></div>
+      </section>
+
+      <!-- Customer Access QR -->
+      <section class="tab-panel hidden" id="xtab-cust-access">
+        <div class="page-header"><div><h1>Customer Access</h1><p class="page-subtitle">Generate QR for customers to open shop</p></div></div>
+        <div class="dashboard-grid">
+          <div class="card">
+            <h3>Generate Access QR</h3>
+            <div class="divider"></div>
+            <div class="form-group">
+              <label class="label">Expiry</label>
+              <select class="input" id="cashierCaExpiry">
+                <option value="10">10 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="60">1 hour</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="generateCashierAccessQR()">Generate QR</button>
+            <div id="cashierQrOutput" style="margin-top:16px"></div>
+          </div>
+          <div class="card">
+            <h3>Instructions</h3>
+            <div class="divider"></div>
+            <ol style="color:var(--gray-200);font-size:14px;line-height:2;padding-left:20px">
+              <li>Set the QR expiry duration</li>
+              <li>Click "Generate QR"</li>
+              <li>Show QR to customer</li>
+              <li>Customer scans QR with their phone</li>
+              <li>Customer's panel opens automatically</li>
+              <li>Customer can browse &amp; build their cart</li>
+              <li>Customer scans <em>their</em> QR at checkout</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CUSTOMER PANEL
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="view-customer" class="hidden">
+
+  <header class="cust-header">
+    <div class="cust-header-inner">
+      <div class="cust-logo">
+        <span style="font-size:32px">🛒</span>
+        <div>
+          <div class="cust-logo-title">ShopCompanion</div>
+          <div class="cust-logo-sub">Customer Portal</div>
+        </div>
+      </div>
+      <div class="cust-user">
+        <span id="custUserLabel">Guest</span>
+        <button class="btn btn-ghost btn-sm" onclick="toggleTheme()">☀️</button>
+        <button class="btn btn-ghost btn-sm" onclick="goHome()">🏠</button>
+      </div>
+    </div>
+    <div class="cust-tabs-bar">
+      <div class="cust-tabs">
+        <button class="cust-tab active" onclick="custTab('shop',this)">🛍️ Shop</button>
+        <button class="cust-tab" onclick="custTab('lists',this)">📋 My Lists</button>
+        <button class="cust-tab" onclick="custTab('cart',this)">🛒 Cart <span class="cart-badge" id="cartBadge">0</span></button>
+        <button class="cust-tab" onclick="custTab('my-qr',this)">📱 My QR</button>
+        <button class="cust-tab" onclick="custTab('rewards',this)">🎁 Rewards</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="cust-main">
+
+    <!-- Shop Panel -->
+    <div class="cust-panel" id="cpanel-shop">
+      <div class="shop-toolbar">
+        <input class="input" type="text" placeholder="🔍 Search products…" oninput="searchProducts(this.value)" style="max-width:300px;flex:1" />
+        <select class="input" id="custSortProd" onchange="renderProducts()" style="max-width:180px">
+          <option value="name">Sort: Name</option>
+          <option value="price">Sort: Price</option>
+          <option value="category">Sort: Category</option>
+          <option value="expiry">Sort: Expiry</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="openScannerModal('cust-scan')">📷 Scan</button>
+      </div>
+      <div class="category-pills" id="custCategoryPills"></div>
+      <div class="product-grid" id="custProductGrid"></div>
+    </div>
+
+    <!-- My Lists Panel -->
+    <div class="cust-panel hidden" id="cpanel-lists">
+      <div class="lists-header">
+        <h2>My Lists</h2>
+        <button class="btn btn-primary" onclick="openModal('modalNewList')">+ New List</button>
+      </div>
+      <div class="lists-grid" id="custListsGrid"></div>
+    </div>
+
+    <!-- Cart Panel -->
+    <div class="cust-panel hidden" id="cpanel-cart">
+      <div class="cart-layout">
+        <div id="custCartItems"></div>
+        <div class="card cart-summary-card" id="custCartSummary">
+          <h3>Order Summary</h3>
+          <div class="divider"></div>
+          <div id="custSummaryRows"></div>
+          <div class="summary-total" id="custCartTotal">₱0.00</div>
+          <div style="margin-top:16px">
+            <input class="input" placeholder="Voucher / promo code" id="custVoucher" style="margin-bottom:8px" />
+            <button class="btn btn-ghost btn-sm" onclick="applyCustVoucher()" style="width:100%;margin-bottom:8px">Apply Voucher</button>
+            <button class="btn btn-success" style="width:100%" onclick="custTab('my-qr',document.querySelector('.cust-tab:nth-child(4)'))">Generate Checkout QR →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- My QR Panel -->
+    <div class="cust-panel hidden" id="cpanel-my-qr">
+      <div class="qr-layout">
+        <div class="card" style="max-width:480px;width:100%;text-align:center">
+          <h3>My Checkout QR</h3>
+          <div class="divider"></div>
+          <p style="font-size:13px;color:var(--gray-400);margin-bottom:16px">Show this QR to the cashier to complete your purchase</p>
+          <div id="custQrOutput" style="display:flex;justify-content:center;margin:16px 0"></div>
+          <div class="qr-cart-preview" id="custQrPreview"></div>
+          <div style="display:flex;gap:8px;margin-top:16px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="generateCustQR()">🔄 Refresh QR</button>
+            <button class="btn btn-ghost" onclick="saveCartAsList()">💾 Save as List</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rewards Panel -->
+    <div class="cust-panel hidden" id="cpanel-rewards">
+      <div class="dashboard-grid">
+        <div class="card">
+          <h3>My Points</h3>
+          <div class="divider"></div>
+          <div id="custPointsPanel"></div>
+        </div>
+        <div class="card">
+          <h3>Available Vouchers</h3>
+          <div class="divider"></div>
+          <div id="custVouchersPanel"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Customer: New List Modal -->
+<div id="modalNewList" class="modal hidden">
+  <div class="modal-box" style="max-width:400px">
+    <div class="modal-header"><h3>New Shopping List</h3><button class="modal-close" onclick="closeModal('modalNewList')">✕</button></div>
+    <div class="form-group"><label class="label">List Name</label><input class="input" id="newListName" placeholder="Weekly Groceries" /></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalNewList')">Cancel</button>
+      <button class="btn btn-primary" onclick="createNewList()">Create List</button>
+    </div>
+  </div>
+</div>
+
+<!-- Customer: Product Detail Modal -->
+<div id="modalProductDetail" class="modal hidden">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-header"><h3 id="pdTitle">Product</h3><button class="modal-close" onclick="closeModal('modalProductDetail')">✕</button></div>
+    <div id="pdContent"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalProductDetail')">Close</button>
+      <button class="btn btn-primary" onclick="addToCartFromDetail()">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SHARED: Scanner Modal
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="modalScanner" class="modal hidden">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-header">
+      <h3 id="scannerModalTitle">Barcode / QR Scanner</h3>
+      <button class="modal-close" onclick="closeScannerModal()">✕</button>
+    </div>
+    <div class="scanner-wrap">
+      <video id="scannerVideo" class="scanner-video" playsinline></video>
+      <div class="scanner-overlay"><div class="scanner-line"></div></div>
+    </div>
+    <p class="scan-status" id="scannerStatus">Initializing camera…</p>
+    <div class="form-group" style="margin-top:12px">
+      <label class="label">Manual Entry Fallback</label>
+      <div style="display:flex;gap:8px">
+        <input class="input" id="manualScanInput" placeholder="Type barcode/code manually" />
+        <button class="btn btn-primary btn-sm" onclick="manualScanSubmit()">Submit</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeScannerModal()">Close Scanner</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── JS Modules ── -->
+<script src="shared.js"></script>
+<script src="admin.js"></script>
+<script src="client.js"></script>
+<script src="cashier.js"></script>
+<script src="customer.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
