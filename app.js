@@ -19,6 +19,14 @@ const VIEWS = {
    ROLE SELECTOR
    ══════════════════════════════════════════════════════════════ */
 function selectRole(role) {
+  // Prevent direct access to customer panel without a valid QR token/session flag
+  if (role === 'customer') {
+    const allowed = sessionStorage.getItem('sc_customer_allowed');
+    if (!allowed || allowed !== '1') {
+      toast('Customer access is restricted. Please scan the QR code provided by the cashier.', 'warning');
+      return;
+    }
+  }
   currentRole = role;
   // Hide all views
   Object.values(VIEWS).forEach(id => {
@@ -140,6 +148,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Auto-generate reg code in customer add modal
   const regField = document.getElementById('cRegCode');
   if (regField) regField.value = 'REG-' + uid();
+    // If the page was opened via a customer access link (hash), process it so the customer view opens
+    if (window.location.hash && window.location.hash.includes('customer')) {
+      // initCustomerAccessFromURL is defined in customer.js and will validate token/expiry and call selectRole('customer')
+      try { initCustomerAccessFromURL(); } catch(e) { /* ignore if not available */ }
+    }
 });
 
 /**

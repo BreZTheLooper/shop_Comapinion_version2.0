@@ -324,6 +324,23 @@ function generateCashierAccessQR() {
   toast('Customer access QR ready!', 'success');
 }
 
+/**
+ * Generate a customer access token and copy the access URL to clipboard
+ * without rendering the QR. Useful when cashier wants to send/link the URL directly.
+ */
+function copyCashierAccessLink() {
+  const minutes = parseInt(document.getElementById('cashierCaExpiry')?.value || '10', 10);
+  const item = createCustomerAccessToken(minutes);
+  const base = window.location.href.split('#')[0];
+  const url  = `${base}#customer?access=${item.token}&exp=${item.expires}`;
+  try {
+    navigator.clipboard.writeText(url);
+    toast('Access link copied to clipboard', 'success');
+  } catch(e) {
+    prompt('Copy this link', url);
+  }
+}
+
 /* ══════════════════════════════════════════════════════════════
    HELPERS
    ══════════════════════════════════════════════════════════════ */

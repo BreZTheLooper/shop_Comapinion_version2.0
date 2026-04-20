@@ -10,7 +10,6 @@ function initAdmin() {
   renderSubscriptionPlans();
   renderRevenueTab();
   renderAnalyticsTab();
-  renderCustomerAccess();
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -305,63 +304,7 @@ function renderAnalyticsTab() {
   }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   ACCESS CONTROL TAB
-   ══════════════════════════════════════════════════════════════ */
-function renderCustomerAccess() {
-  const listEl = document.getElementById('caList');
-  if (!listEl) return;
-  const tokens = getCustomerAccessTokens();
-  if (!tokens.length) {
-    listEl.innerHTML = `<div class="empty-state"><div class="empty-icon">🔐</div><p>No active access tokens</p></div>`;
-    return;
-  }
-  listEl.innerHTML = tokens.map(t => `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);margin-bottom:8px;gap:8px">
-      <div>
-        <div style="font-family:monospace;font-size:13px;color:var(--blue-light)">${t.token}</div>
-        <div style="font-size:11px;color:var(--gray-400);margin-top:3px">Expires: ${new Date(t.expires).toLocaleTimeString()}</div>
-      </div>
-      <button class="btn btn-danger btn-sm" onclick="revokeCustomerAccess('${t.token}')">Revoke</button>
-    </div>
-  `).join('');
-}
-
-function generateCustomerAccess() {
-  const minutes = parseInt(document.getElementById('caExpiry')?.value || '10', 10);
-  const item = createCustomerAccessToken(minutes);
-  const base = window.location.href.split('#')[0];
-  const url  = `${base}#customer?access=${item.token}&exp=${item.expires}`;
-  const out  = document.getElementById('caOutput');
-  out.innerHTML = '';
-
-  const wrap = document.createElement('div');
-  wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:12px';
-
-  const qrDiv = document.createElement('div');
-  generatePlainQR(qrDiv, url, 220);
-
-  const info = document.createElement('div');
-  info.style.cssText = 'font-size:13px;text-align:center';
-  info.innerHTML = `<div style="color:var(--gray-400);margin-bottom:8px">One-time QR · Expires in ${minutes} min</div>
-    <code style="word-break:break-all;font-size:11px;color:var(--blue-light)">${url}</code>`;
-
-  const copyBtn = document.createElement('button');
-  copyBtn.className = 'btn btn-ghost btn-sm';
-  copyBtn.textContent = '📋 Copy URL';
-  copyBtn.onclick = () => { try { navigator.clipboard.writeText(url); toast('URL copied!','success'); } catch(e){prompt('Copy URL',url);} };
-
-  wrap.append(qrDiv, info, copyBtn);
-  out.appendChild(wrap);
-  renderCustomerAccess();
-  toast('QR generated!', 'success');
-}
-
-function revokeCustomerAccess(token) {
-  revokeCustomerAccessToken(token);
-  renderCustomerAccess();
-  toast('Token revoked', 'info');
-}
+/* Customer access management moved to Cashier panel only. Admin no longer generates customer access QR codes. */
 
 /* ══════════════════════════════════════════════════════════════
    HELPERS
