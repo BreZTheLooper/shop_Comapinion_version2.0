@@ -42,8 +42,8 @@ function selectRole(role) {
     case 'client':   initClient();   break;
     case 'cashier':  initCashier();  break;
     case 'customer': 
-      // show splash for customer panel then initialize
-      showSplash(6000);
+      // show splash for customer panel then initialize (match animation length)
+      showSplash(1200);
       initCustomer(); 
       break;
   }
@@ -143,8 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
   seedData();
   // Always start on landing
   document.getElementById('view-landing').classList.remove('hidden');
-  // show splash overlay on initial load for ~6s
-  showSplash(6000);
+  // show splash overlay on initial load (match animation length)
+  showSplash(1200);
   // Auto-generate reg code in customer add modal
   const regField = document.getElementById('cRegCode');
   if (regField) regField.value = 'REG-' + uid();
