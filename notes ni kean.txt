@@ -1,0 +1,63 @@
+Shop Companion: TBE
+
+intro interface - igigitna lahat. Then, add a color indicated base sa isinulat natin sa papel. 
+
+ex: 
+
+Admin
+Client
+Cashier
+----------------------------------------------------------------------- 
+
+Admin panel 
+
+Overview: paayos ako nung dashboard sa taas wag lalampas sa mismong box and then pa change ng font/text into thinner but not so thin. Yung sakto lang. 
+
+suggested fonts: 
+
+
+retailer opt: add transaction record/history kung kelan nagbayad, time ng nagbayad. Kumbaga e yung record nung transaction for plan for those client/retailer na na avail. Kumbaga proof or work/record. 
+
+Analytics: paayos ako nung nasa taas na mga lampas sa box. 
+
+------------------------------------------------------------------------
+
+Client: 
+
+store dashboard: font nung nasa taas. 
+customers: change mo yung name into customer rewards. 
+order history: pa add sa gilid after total kung may na claim silang rewards or points pag nag exceed sila sa mismong quota 
+
+ex:
+
+ Items     total    rewards/points 
+x2 Milk    500           2 pts
+
+Items      total    rewards/points 
+x5 Wine    5,900       7 pts
+
+
+what do you think? 
+
+
+My Account: same dun sa admin yung part na may copy rin sila ng history or transaction record na pang kanila lang. 
+
+--------------------------------------------------------------------------------
+Cashier
+
+Dahborad: lagyan kaya natin sya ng cashier station number? 
+ex: cashier station 1, cashier station 2, and so on. 
+
+color coding indication for stock
+
+pwede kaya dito yung button like na interface? yung kagaya sa mgam kiosk? 
+
+
+sa cashier pa include din yung(sinabi ko to sayo) they can see VIRTUAl CARD for points  
+
+
+pop up notification sya. 
+
+
+--------------------------------------------------------------------------------
+Customer: 

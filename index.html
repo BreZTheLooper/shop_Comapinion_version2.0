@@ -49,8 +49,8 @@
     <div class="role-grid">
 
       <!-- Admin Card -->
-      <button class="role-card" onclick="selectRole('admin')" data-role="admin">
-        <div class="role-icon-wrap" style="--rc:#1a6bff">
+      <button class="role-card" onclick="selectRole('admin')" data-role="admin" style="--rc:#1b2475">
+        <div class="role-icon-wrap">
           <span class="role-icon">⚙️</span>
         </div>
         <div class="role-info">
@@ -61,8 +61,8 @@
       </button>
 
       <!-- Client Card -->
-      <button class="role-card" onclick="selectRole('client')" data-role="client">
-        <div class="role-icon-wrap" style="--rc:#1de98b">
+      <button class="role-card" onclick="selectRole('client')" data-role="client" style="--rc:#50D119">
+        <div class="role-icon-wrap">
           <span class="role-icon">🏪</span>
         </div>
         <div class="role-info">
@@ -73,8 +73,8 @@
       </button>
 
       <!-- Cashier Card -->
-      <button class="role-card" onclick="selectRole('cashier')" data-role="cashier">
-        <div class="role-icon-wrap" style="--rc:#ffd94d">
+      <button class="role-card" onclick="selectRole('cashier')" data-role="cashier" style="--rc:#FF4008">
+        <div class="role-icon-wrap">
           <span class="role-icon">💳</span>
         </div>
         <div class="role-info">
@@ -84,17 +84,7 @@
         <div class="role-arrow">→</div>
       </button>
 
-      <!-- Customer Card -->
-      <button class="role-card" onclick="selectRole('customer')" data-role="customer">
-        <div class="role-icon-wrap" style="--rc:#ff4f6a">
-          <span class="role-icon">🛍️</span>
-        </div>
-        <div class="role-info">
-          <h3>Customer</h3>
-          <p>Browse shop, cart, lists &amp; QR checkout</p>
-        </div>
-        <div class="role-arrow">→</div>
-      </button>
+      <!-- Customer access removed from homepage — customers must use QR from Cashier -->
 
     </div>
 
@@ -122,8 +112,7 @@
         <a href="#" class="nav-item" onclick="adminTab('retailers',this)"><span class="nav-icon">🏪</span><span class="nav-label">Retailers</span></a>
         <a href="#" class="nav-item" onclick="adminTab('subscriptions',this)"><span class="nav-icon">💎</span><span class="nav-label">Subscriptions</span></a>
         <a href="#" class="nav-item" onclick="adminTab('revenue',this)"><span class="nav-icon">💰</span><span class="nav-label">Revenue</span></a>
-        <a href="#" class="nav-item" onclick="adminTab('analytics',this)"><span class="nav-icon">📈</span><span class="nav-label">Analytics</span></a>
-        <a href="#" class="nav-item" onclick="adminTab('access-control',this)"><span class="nav-icon">🔐</span><span class="nav-label">Access Control</span></a>
+  <a href="#" class="nav-item" onclick="adminTab('analytics',this)"><span class="nav-icon">📈</span><span class="nav-label">Analytics</span></a>
       </nav>
       <a href="#" class="nav-switch-btn" onclick="goHome()"><span>🏠</span><span>Back to Home</span></a>
     </aside>
@@ -231,32 +220,7 @@
         </div>
       </section>
 
-      <!-- Access Control -->
-      <section class="tab-panel hidden" id="atab-access-control">
-        <div class="page-header"><div><h1>Access Control</h1><p class="page-subtitle">Generate &amp; manage access tokens</p></div></div>
-        <div class="dashboard-grid">
-          <div class="card">
-            <h3>Generate Customer Access QR</h3>
-            <div class="divider"></div>
-            <div class="form-group">
-              <label class="label">Expiry Duration</label>
-              <select class="input" id="caExpiry">
-                <option value="10">10 minutes</option>
-                <option value="30">30 minutes</option>
-                <option value="60">1 hour</option>
-                <option value="1440">24 hours</option>
-              </select>
-            </div>
-            <button class="btn btn-primary" onclick="generateCustomerAccess()">Generate QR</button>
-            <div id="caOutput" style="margin-top:16px"></div>
-          </div>
-          <div class="card">
-            <h3>Active Tokens</h3>
-            <div class="divider"></div>
-            <div id="caList"></div>
-          </div>
-        </div>
-      </section>
+      <!-- Access Control removed from Admin — Customer access is only available to Cashier panel -->
     </main>
   </div>
 </div>
@@ -275,7 +239,7 @@
         <select class="input" id="rPlan">
           <option value="basic">Basic — ₱499/mo</option>
           <option value="standard">Standard — ₱999/mo</option>
-          <option value="premium">Premium — ₱1,999/mo</option>
+          <option value="premium">Premium — ₱1,499/mo</option>
         </select>
       </div>
     </div>
@@ -599,7 +563,10 @@
                 <option value="60">1 hour</option>
               </select>
             </div>
-            <button class="btn btn-primary" onclick="generateCashierAccessQR()">Generate QR</button>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="btn btn-primary" onclick="generateCashierAccessQR()">Generate QR</button>
+              <button class="btn btn-ghost" onclick="copyCashierAccessLink()">📋 Copy Link</button>
+            </div>
             <div id="cashierQrOutput" style="margin-top:16px"></div>
           </div>
           <div class="card">

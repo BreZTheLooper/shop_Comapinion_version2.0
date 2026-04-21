@@ -32,7 +32,8 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 680px;
+  /* widen container so three columns keep the same button size as before */
+  max-width: 980px;
   padding: 40px 24px;
   text-align: center;
 }
@@ -85,9 +86,20 @@
 /* Role Grid */
 .role-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* three equal columns on wide screens */
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-bottom: 32px;
+}
+
+/* Responsive: fall back to two columns on medium screens, single column on narrow */
+@media (max-width: 1000px) {
+  .landing-content { max-width: 720px; }
+  .role-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .landing-content { padding: 28px 16px; }
+  .role-grid { grid-template-columns: 1fr; gap: 12px; }
 }
 
 .role-card {
@@ -103,6 +115,7 @@
   transition: all var(--transition);
   position: relative;
   overflow: hidden;
+  z-index: 1; /* make sure the card content sits above the glow pseudo-element */
 }
 .role-card::before {
   content: '';
@@ -112,8 +125,48 @@
   opacity: 0;
   transition: opacity var(--transition);
 }
-.role-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.role-card:hover::before { opacity: 0.06; }
+
+/* subtle blurred glow layer (fallback/extra depth) */
+.role-card::after {
+  content: '';
+  position: absolute;
+  inset: -6px; /* allow a little extra room for the blur inside the card bounds */
+  background: var(--rc, #1a6bff);
+  opacity: 0;
+  filter: blur(18px);
+  transition: opacity var(--transition), transform var(--transition);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0; /* sit behind the content but above the page background */
+}
+.role-card:hover {
+  transform: translateY(-2px);
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition), border-color var(--transition);
+  /* outline becomes the exact role color */
+  border-color: var(--rc);
+  /* subtle background accent using a faint mix of the role color (modern browsers) */
+  background: linear-gradient(135deg, color-mix(in srgb, var(--rc, #1a6bff) 8%, transparent), var(--gray-800));
+  /* multi-layer shadow: thin solid ring + larger colored blur for glow */
+  box-shadow:
+    0 0 0 2px var(--rc),
+    /* darker depth */
+    0 10px 30px rgba(0,0,0,0.45),
+    /* extra soft colored glow (fallback uses var(--rc) directly; color-mix applied where supported) */
+    0 8px 30px 6px color-mix(in srgb, var(--rc, #1a6bff) 18%, transparent);
+}
+.role-card:hover::after { opacity: 0.12; transform: scale(1.02); }
+.role-card:hover::before { opacity: 0.12; }
+
+.role-card:hover .role-icon-wrap {
+  background: color-mix(in srgb, var(--rc, #1a6bff) 42%, transparent);
+  /* make the icon-wrap border the exact role color for clarity */
+  border-color: var(--rc);
+  /* stronger colored glow around the icon itself to make it pop */
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45), 0 0 22px var(--rc);
+  transform: translateY(-2px);
+}
+.role-card:hover .role-info h3 { color: var(--white); }
+.role-card:hover .role-info p  { color: color-mix(in srgb, var(--rc, #1a6bff) 35%, var(--gray-400)); }
 
 .role-icon-wrap {
   width: 48px; height: 48px;
@@ -123,6 +176,8 @@
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   position: relative; z-index: 1;
+  /* ensure the icon wrapper sits above the blurred ::after glow */
+  z-index: 2; transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
 }
 .role-icon { font-size: 22px; }
 .role-info { flex: 1; position: relative; z-index: 1; }

@@ -372,16 +372,24 @@ function generatePlainQR(container, data, size=220) {
     colorDark: '#000000', colorLight: '#ffffff',
     correctLevel: QRCode.CorrectLevel.H
   });
-  // Ensure canvas is accessible for saving
+  // Ensure canvas is accessible for saving and remove duplicates
   setTimeout(() => {
     const canvas = container.querySelector('canvas');
     if (canvas) {
-      const img = document.createElement('img');
-      img.src = canvas.toDataURL('image/png');
-      img.style.cssText = 'width:100%;max-width:220px;border-radius:8px';
-      img.alt = 'QR Code';
-      canvas.replaceWith(img);
+      try {
+        const img = document.createElement('img');
+        img.src = canvas.toDataURL('image/png');
+        img.style.cssText = 'width:100%;max-width:220px;border-radius:8px;display:block;margin:0 auto';
+        img.alt = 'QR Code';
+        canvas.replaceWith(img);
+      } catch(e) { /* ignore canvas->img conversion errors */ }
     }
+    // Remove duplicate images if present (some renderers may append extras)
+    const imgs = Array.from(container.querySelectorAll('img'));
+    if (imgs.length > 1) imgs.slice(1).forEach(i => i.remove());
+    // Remove any stray extra child nodes beyond the first
+    const children = Array.from(container.children);
+    if (children.length > 1) children.slice(1).forEach(c => c.remove());
   }, 200);
 }
 
@@ -569,7 +577,7 @@ function toggleTheme() {
   setTheme(cur==='dark'?'light':'dark');
   toast(`${cur==='dark'?'Light':'Dark'} mode`, 'info');
 }
-function initTheme() { setTheme(localStorage.getItem('sc_theme')||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark')); }
+function initTheme() { setTheme(localStorage.getItem('sc_theme')||'dark'); }
 window.addEventListener('DOMContentLoaded', initTheme);
 
 /* ============================================================
