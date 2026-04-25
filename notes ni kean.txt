@@ -1,12 +1,12 @@
-Shop Companion: TBE
+Shop Companion Landing Page
 
 intro interface - igigitna lahat. Then, add a color indicated base sa isinulat natin sa papel. 
 
 ex: 
 
-Admin
-Client
-Cashier
+Admin - #1b2475
+Client - #50D119
+Cashier - #FF4008
 ----------------------------------------------------------------------- 
 
 Admin panel 
@@ -14,6 +14,9 @@ Admin panel
 Overview: paayos ako nung dashboard sa taas wag lalampas sa mismong box and then pa change ng font/text into thinner but not so thin. Yung sakto lang. 
 
 suggested fonts: 
+FonT Display: Black Ops, Calisto MT
+Font Body: Courier New, Georgia
+Font Number: Digital
 
 
 retailer opt: add transaction record/history kung kelan nagbayad, time ng nagbayad. Kumbaga e yung record nung transaction for plan for those client/retailer na na avail. Kumbaga proof or work/record. 
