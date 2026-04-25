@@ -272,7 +272,7 @@
 
 /* --- Receipt --- */
 .receipt {
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-body);
   font-size: 13px;
   color: var(--white);
   line-height: 1.8;

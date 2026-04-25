@@ -4,7 +4,7 @@
    Accents: Green (success), Yellow (warning)
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Orbitron:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 /* --- CSS Variables --- */
 :root {
@@ -25,8 +25,12 @@
   --yellow-dark: #e6be2a;
   --red:         #ff4f6a;
 
-  --font-display: 'Syne', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
+  /* Display font preference: Black Ops One (primary), fall back to Calisto MT and Syne */
+  --font-display: 'Black Ops One', 'Calisto MT', 'Syne', sans-serif;
+  /* Body font preference: Courier New (primary) then Georgia, keep DM Sans as fallback for UI text */
+  --font-body:    'Courier New', Georgia, 'DM Sans', sans-serif;
+  /* Numeric / digital-styled font for prices, totals and receipts */
+  --font-numeric: 'Orbitron', 'Courier New', monospace;
 
   --radius-sm:  6px;
   --radius-md:  12px;
@@ -99,6 +103,26 @@ h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight: 700; line-height
 h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); }
 h2 { font-size: clamp(1.4rem, 3vw, 2rem); }
 h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
+
+/* Numeric / digital font for monetary values and totals */
+.product-price,
+.plan-price,
+.order-item-price,
+.cart-item-subtotal,
+.summary-total,
+.totals-row.total span,
+.receipt-total,
+.checkout-total,
+#custCartTotal,
+.order-totals span,
+.price,
+.amount {
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  -moz-font-feature-settings: "tnum" 1;
+  -webkit-font-feature-settings: "tnum" 1;
+}
 
 /* --- Layout Utilities --- */
 .container { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
@@ -479,6 +503,7 @@ tbody tr:hover td { background: rgba(255,255,255,0.03); }
   height: auto;
   margin: 0 auto;
   -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 /* Ensure image/canvas/svg render crisply (no smoothing/blur) */

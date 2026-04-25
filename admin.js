@@ -84,7 +84,7 @@ function renderRetailersTable(filter='', statusFilter='') {
       <tbody>
         ${retailers.map(r => `
           <tr>
-            <td><strong>${r.storeName}</strong><br><small style="color:var(--gray-400);font-family:monospace">${r.accessCode}</small></td>
+            <td><strong>${r.storeName}</strong><br><small style="color:var(--gray-400);font-family:var(--font-body)">${r.accessCode}</small></td>
             <td>${r.clientName}<br><small style="color:var(--gray-400)">${r.gmail}</small></td>
             <td style="font-size:13px">${r.location}</td>
             <td style="font-size:13px">${r.contact}</td>

@@ -118,7 +118,7 @@ function renderInventory() {
           return `
           <tr>
             <td><span style="margin-right:6px">${p.image||'📦'}</span><strong>${p.name}</strong><br>
-              <small style="font-family:monospace;color:var(--gray-400)">${p.barcode||'—'}</small></td>
+              <small style="font-family:var(--font-body);color:var(--gray-400)">${p.barcode||'—'}</small></td>
             <td>${p.category}</td>
             <td style="font-size:13px">${p.type||'—'}</td>
             <td style="font-weight:700;color:var(--blue-light)">${formatPHP(p.price)}</td>
