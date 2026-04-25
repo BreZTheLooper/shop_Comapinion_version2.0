@@ -17,13 +17,29 @@ function initCustomer() {
   _custDiscount = 0;
   updateCartBadge();
   renderCustCategories();
-  renderProducts();
-  renderCustLists();
-  renderRewards();
+  // Defer heavier rendering so the UI remains responsive
+  const heavyWork = () => {
+    try { renderProducts(); } catch(e){}
+    try { renderCustLists(); } catch(e){}
+    try { renderRewards(); } catch(e){}
+  };
+  if ('requestIdleCallback' in window) requestIdleCallback(heavyWork, {timeout:2000});
+  else setTimeout(heavyWork, 200);
 
-  // Handle deep-link access tokens
-  initCustomerAccessFromURL();
+  // Note: deep-link access is handled by the router (init on DOMContentLoaded)
 
+
+// Lightweight initialization for fast panel show: updates minimal UI so the
+// customer panel becomes interactive quickly. Heavy rendering is deferred.
+function initCustomerLight() {
+  // Reset lightweight state
+  _custCart = _custCart || [];
+  _custDiscount = _custDiscount || 0;
+  // Fast UI updates
+  updateCartBadge();
+  renderCustCategories();
+  renderProducts(true);
+}
   // Set customer label
   const label = document.getElementById('custUserLabel');
   if (label) {
@@ -56,7 +72,7 @@ function searchProducts(val) {
   renderProducts();
 }
 
-function renderProducts() {
+function renderProducts(fast = false) {
   const el = document.getElementById('custProductGrid');
   if (!el) return;
   const sort = document.getElementById('custSortProd')?.value || 'name';
@@ -79,7 +95,9 @@ function renderProducts() {
 
   if (!items.length) { el.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🔍</div><p>No products found</p></div>'; return; }
 
-  el.innerHTML = items.map(p=>{
+  const list = fast ? items.slice(0, 24) : items;
+
+  el.innerHTML = list.map(p=>{
     const inCart = _custCart.find(i=>i.id===p.id);
     const status = Inventory.stockStatus(p);
     const days   = Inventory.daysUntilExpiry(p);
@@ -91,7 +109,7 @@ function renderProducts() {
         <span class="product-emoji">${p.image||'📦'}</span>
         <div class="product-name">${p.name}</div>
         <div class="product-meta">${p.category}${p.type?' · '+p.type:''} · ${p.unit||''}</div>
-        ${days!==null&&days<=7?`<div style="font-size:11px;color:${days<0?'var(--red)':'var(--yellow)'}">⏰ ${days<0?'Expired':days+'d left'}</div>`:''}
+      ${days!==null?`<div style="font-size:11px;color:${days<0?'var(--red)':'var(--gray-400)'}">⏰ Expires ${formatShortDate(p.expiry)}</div>`:''}
         <div class="product-price">${formatPHP(p.price)}</div>
         <div class="product-actions" onclick="event.stopPropagation()">
           ${inCart ? `
@@ -130,7 +148,7 @@ function showProductDetail(id) {
     <div class="pd-row"><span class="pd-label">Unit</span><span class="pd-val">${p.unit||'—'}</span></div>
     <div class="pd-row"><span class="pd-label">Price</span><span class="pd-val" style="color:var(--blue-light);font-family:var(--font-display)">${formatPHP(p.price)}</span></div>
     <div class="pd-row"><span class="pd-label">Availability</span><span class="pd-val">${stockBadge(status)}</span></div>
-    ${days!==null?`<div class="pd-row"><span class="pd-label">Expiry</span><span class="pd-val ${days<0?'expiry-critical':days<=7?'expiry-warn':'expiry-ok'}">${p.expiry} (${days<0?'Expired':days+' days left'})</span></div>`:''}
+  ${days!==null?`<div class="pd-row"><span class="pd-label">Expiry</span><span class="pd-val ${days<0?'expiry-critical':days<=7?'expiry-warn':'expiry-ok'}">${formatShortDate(p.expiry)}</span></div>`:''}
     ${status!=='out'?`
       <div style="margin-top:16px;display:flex;align-items:center;gap:12px;justify-content:center">
         <button class="qty-btn" onclick="_selectedPdQty=Math.max(1,_selectedPdQty-1);this.nextElementSibling.textContent=_selectedPdQty" style="width:36px;height:36px;font-size:20px">−</button>
@@ -423,22 +441,24 @@ function initCustomerAccessFromURL() {
     const exp    = params.get('exp');
     if (exp) {
       if (Date.now() <= parseInt(exp,10)) {
+        // lightweight acceptance — set session flag and open customer via router
         sessionStorage.setItem('sc_customer_allowed','1');
+        history.replaceState(null,'',window.location.pathname+'#customer');
         selectRole('customer');
         toast('Welcome! Customer access granted.','success');
-        history.replaceState(null,'',window.location.pathname+'#customer');
       } else {
         toast('Access link expired','error');
       }
       return;
     }
     if (token) {
+      // validate token (fast) and open customer if OK. Avoid heavy rendering here.
       const ok = validateAndConsumeCustomerAccessToken(token);
       if (ok) {
         sessionStorage.setItem('sc_customer_allowed','1');
+        history.replaceState(null,'',window.location.pathname+'#customer');
         selectRole('customer');
         toast('Welcome! Access granted.','success');
-        history.replaceState(null,'',window.location.pathname+'#customer');
       } else {
         toast('Invalid or expired access token','error');
       }

@@ -16,7 +16,7 @@ Overview: paayos ako nung dashboard sa taas wag lalampas sa mismong box and then
 suggested fonts: 
 FonT Display: Black Ops, Calisto MT
 Font Body: Courier New, Georgia
-Font Number: Digital
+Font for Numbers: Digital
 
 
 retailer opt: add transaction record/history kung kelan nagbayad, time ng nagbayad. Kumbaga e yung record nung transaction for plan for those client/retailer na na avail. Kumbaga proof or work/record. 

@@ -273,8 +273,8 @@ function renderCashierInventory() {
       <tbody>${items.map(p=>{
         const status = Inventory.stockStatus(p);
         const days = Inventory.daysUntilExpiry(p);
-        const expiryClass = days===null?'':days<0?'expiry-critical':days<=7?'expiry-warn':'expiry-ok';
-        const expiryText  = days===null?'—':days<0?`Expired`:`${days}d left`;
+  const expiryClass = days===null?'':days<0?'expiry-critical':days<=7?'expiry-warn':'expiry-ok';
+  const expiryText  = days===null?'—':formatShortDate(p.expiry);
         return `
         <tr>
           <td><span style="margin-right:6px">${p.image||'📦'}</span><strong>${p.name}</strong></td>

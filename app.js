@@ -42,9 +42,18 @@ function selectRole(role) {
     case 'client':   initClient();   break;
     case 'cashier':  initCashier();  break;
     case 'customer': 
-      // show splash for customer panel then initialize (match animation length)
+      // show splash for customer panel then initialize (fast path)
       showSplash(1200);
-      initCustomer(); 
+      // lightweight init so UI paints quickly
+      try { initCustomerLight(); } catch(e) { /* fallback */ }
+      // schedule full init after idle or after splash finishes
+      const fullInit = () => { try { initCustomer(); } catch(e){} };
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(fullInit, {timeout: 900});
+      } else {
+        // ensure full init runs shortly after splash
+        setTimeout(fullInit, 900);
+      }
       break;
   }
   logActivity(`Panel opened: ${role}`, 'access');

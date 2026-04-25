@@ -22,23 +22,27 @@ function seedData() {
   if (Store.get('seeded_v2')) return;
 
   /* Inventory with extended fields */
-  Store.set('inventory', [
-    { id:'P001', name:'Whole Milk (1L)',       barcode:'8901234560011', category:'Dairy',     type:'Full Cream', price:75,  stock:50, unit:'bottle', image:'🥛', expiry:'2025-06-15', batch:'BATCH-2024-001', lowStockThreshold:10 },
-    { id:'P002', name:'White Bread Loaf',      barcode:'8901234560028', category:'Bakery',    type:'Sliced',     price:55,  stock:30, unit:'loaf',   image:'🍞', expiry:'2025-04-30', batch:'BATCH-2024-001', lowStockThreshold:5  },
-    { id:'P003', name:'Organic Eggs (12 pcs)', barcode:'8901234560035', category:'Dairy',     type:'Free Range', price:120, stock:40, unit:'tray',   image:'🥚', expiry:'2025-05-20', batch:'BATCH-2024-002', lowStockThreshold:8  },
-    { id:'P004', name:'Cheddar Cheese (200g)', barcode:'8901234560042', category:'Dairy',     type:'Block',      price:185, stock:20, unit:'pack',   image:'🧀', expiry:'2025-07-10', batch:'BATCH-2024-002', lowStockThreshold:5  },
-    { id:'P005', name:'Chicken Breast (500g)', barcode:'8901234560059', category:'Meat',      type:'Boneless',   price:210, stock:25, unit:'pack',   image:'🍗', expiry:'2025-04-22', batch:'BATCH-2024-003', lowStockThreshold:10 },
-    { id:'P006', name:'Jasmine Rice (1kg)',    barcode:'8901234560066', category:'Grains',    type:'Premium',    price:65,  stock:80, unit:'bag',    image:'🍚', expiry:'2026-01-01', batch:'BATCH-2024-003', lowStockThreshold:20 },
-    { id:'P007', name:'Olive Oil (500ml)',     barcode:'8901234560073', category:'Pantry',    type:'Extra Virgin',price:320,stock:15, unit:'bottle', image:'🫒', expiry:'2026-03-01', batch:'BATCH-2024-004', lowStockThreshold:5  },
-    { id:'P008', name:'Pasta (500g)',          barcode:'8901234560080', category:'Grains',    type:'Spaghetti',  price:45,  stock:60, unit:'pack',   image:'🍝', expiry:'2026-06-01', batch:'BATCH-2024-004', lowStockThreshold:15 },
-    { id:'P009', name:'Tomato Sauce (250g)',   barcode:'8901234560097', category:'Pantry',    type:'Classic',    price:35,  stock:45, unit:'can',    image:'🥫', expiry:'2026-01-15', batch:'BATCH-2024-005', lowStockThreshold:10 },
-    { id:'P010', name:'Orange Juice (1L)',     barcode:'8901234560103', category:'Beverages', type:'No Pulp',    price:95,  stock:35, unit:'bottle', image:'🍊', expiry:'2025-05-01', batch:'BATCH-2024-005', lowStockThreshold:8  },
-    { id:'P011', name:'Greek Yogurt (200g)',   barcode:'8901234560110', category:'Dairy',     type:'Plain',      price:85,  stock:28, unit:'cup',    image:'🍦', expiry:'2025-04-28', batch:'BATCH-2024-006', lowStockThreshold:7  },
-    { id:'P012', name:'Banana (per kg)',       barcode:'8901234560127', category:'Produce',   type:'Lakatan',    price:60,  stock:55, unit:'kg',     image:'🍌', expiry:'2025-04-24', batch:'BATCH-2024-006', lowStockThreshold:10 },
-    { id:'P013', name:'Apple Fuji (per kg)',   barcode:'8901234560134', category:'Produce',   type:'Fuji',       price:110, stock:40, unit:'kg',     image:'🍎', expiry:'2025-05-10', batch:'BATCH-2024-007', lowStockThreshold:8  },
-    { id:'P014', name:'Instant Noodles',       barcode:'8901234560141', category:'Pantry',    type:'Chicken',    price:15,  stock:100,unit:'pack',   image:'🍜', expiry:'2026-09-01', batch:'BATCH-2024-007', lowStockThreshold:20 },
-    { id:'P015', name:'Bottled Water (1.5L)',  barcode:'8901234560158', category:'Beverages', type:'Purified',   price:25,  stock:90, unit:'bottle', image:'💧', expiry:'2027-01-01', batch:'BATCH-2024-008', lowStockThreshold:25 },
-  ]);
+  const _seedInventory = [
+  { id:'P001', name:'Whole Milk (1L)',       barcode:'8901234560011', category:'Dairy',     type:'Full Cream', price:75,  stock:50, unit:'bottle', image:'🥛', expiry:'2027-06-07', batch:'BATCH-2024-001', lowStockThreshold:10 },
+  { id:'P002', name:'White Bread Loaf',      barcode:'8901234560028', category:'Bakery',    type:'Sliced',     price:55,  stock:30, unit:'loaf',   image:'🍞', expiry:'2027-06-08', batch:'BATCH-2024-001', lowStockThreshold:5  },
+  { id:'P003', name:'Organic Eggs (12 pcs)', barcode:'8901234560035', category:'Dairy',     type:'Free Range', price:120, stock:40, unit:'tray',   image:'🥚', expiry:'2028-06-09', batch:'BATCH-2024-002', lowStockThreshold:8  },
+  { id:'P004', name:'Cheddar Cheese (200g)', barcode:'8901234560042', category:'Dairy',     type:'Block',      price:185, stock:20, unit:'pack',   image:'🧀', expiry:'2026-06-10', batch:'BATCH-2024-002', lowStockThreshold:5  },
+  { id:'P005', name:'Chicken Breast (500g)', barcode:'8901234560059', category:'Meat',      type:'Boneless',   price:210, stock:25, unit:'pack',   image:'🍗', expiry:'2026-06-11', batch:'BATCH-2024-003', lowStockThreshold:10 },
+  { id:'P006', name:'Jasmine Rice (1kg)',    barcode:'8901234560066', category:'Grains',    type:'Premium',    price:65,  stock:80, unit:'bag',    image:'🍚', expiry:'2026-06-12', batch:'BATCH-2024-003', lowStockThreshold:20 },
+  { id:'P007', name:'Olive Oil (500ml)',     barcode:'8901234560073', category:'Pantry',    type:'Extra Virgin',price:320,stock:15, unit:'bottle', image:'🫒', expiry:'2026-06-13', batch:'BATCH-2024-004', lowStockThreshold:5  },
+  { id:'P008', name:'Pasta (500g)',          barcode:'8901234560080', category:'Grains',    type:'Spaghetti',  price:45,  stock:60, unit:'pack',   image:'🍝', expiry:'2026-06-14', batch:'BATCH-2024-004', lowStockThreshold:15 },
+  { id:'P009', name:'Tomato Sauce (250g)',   barcode:'8901234560097', category:'Pantry',    type:'Classic',    price:35,  stock:45, unit:'can',    image:'🥫', expiry:'2027-06-15', batch:'BATCH-2024-005', lowStockThreshold:10 },
+  { id:'P010', name:'Orange Juice (1L)',     barcode:'8901234560103', category:'Beverages', type:'No Pulp',    price:95,  stock:35, unit:'bottle', image:'🍊', expiry:'2028-06-16', batch:'BATCH-2024-005', lowStockThreshold:8  },
+  { id:'P011', name:'Greek Yogurt (200g)',   barcode:'8901234560110', category:'Dairy',     type:'Plain',      price:85,  stock:28, unit:'cup',    image:'🍦', expiry:'2026-06-17', batch:'BATCH-2024-006', lowStockThreshold:7  },
+  { id:'P012', name:'Banana (per kg)',       barcode:'8901234560127', category:'Produce',   type:'Lakatan',    price:60,  stock:55, unit:'kg',     image:'🍌', expiry:'2026-06-18', batch:'BATCH-2024-006', lowStockThreshold:10 },
+  { id:'P013', name:'Apple Fuji (per kg)',   barcode:'8901234560134', category:'Produce',   type:'Fuji',       price:110, stock:40, unit:'kg',     image:'🍎', expiry:'2026-06-19', batch:'BATCH-2024-007', lowStockThreshold:8  },
+  { id:'P014', name:'Instant Noodles',       barcode:'8901234560141', category:'Pantry',    type:'Chicken',    price:15,  stock:100,unit:'pack',   image:'🍜', expiry:'2026-06-20', batch:'BATCH-2024-007', lowStockThreshold:20 },
+  { id:'P015', name:'Bottled Water (1.5L)',  barcode:'8901234560158', category:'Beverages', type:'Purified',   price:25,  stock:90, unit:'bottle', image:'💧', expiry:'2026-06-21', batch:'BATCH-2024-008', lowStockThreshold:25 },
+  ];
+
+  // Keep seeded inventory (do not auto-remove by expiry) so demo products are available
+  const filtered = _seedInventory;
+  Store.set('inventory', filtered);
 
   /* Customers */
   Store.set('customers', [
@@ -560,7 +564,14 @@ function formatDate(iso) {
   return new Date(iso).toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
 }
 function formatShortDate(iso) {
-  return new Date(iso).toLocaleDateString('en-PH',{month:'short',day:'numeric'});
+  // Return MM/DD/YYYY
+  try {
+    const d = new Date(iso);
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${mm}/${dd}/${yyyy}`;
+  } catch (e) { return iso; }
 }
 
 /* ============================================================
