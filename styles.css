@@ -463,28 +463,59 @@ tbody tr:hover td { background: rgba(255,255,255,0.03); }
    Toggle by adding class `light-theme` to the root element
    ============================================================ */
 .light-theme {
-  --black:       #f7f9fc; /* page bg */
+  /* Page and text */
+  --black:       #f7f9fc; /* page background (light) */
+  --white:       #0a0a0f; /* primary text (dark) */
+
+  /* Blues / accents */
   --blue:        #1a6bff;
   --blue-dark:   #0f4bcc;
   --blue-light:  #2566ff;
-  --blue-glow:   rgba(26,107,255,0.14);
-  --white:       #0a0a0f; /* main text */
-  --gray-100:    #e6e9f2;
-  --gray-200:    #b9bdc8;
-  --gray-400:    #6b7280;
-  --gray-600:    #f1f4f8;
-  --gray-800:    #ffffff; /* card bg */
+  --blue-glow:   rgba(37,102,255,0.12);
+
+  /* Grays — tuned for readable contrast on light background */
+  --gray-100:    #f3f5f9; /* very light surfaces */
+  --gray-200:    #d6d8e0; /* input borders, subtle dividers */
+  --gray-400:    #6b7280; /* secondary text */
+  --gray-600:    #4b5563; /* muted text (readable on light bg) */
+  --gray-800:    #ffffff; /* card / surface background */
+
+  /* Status colors */
   --green:       #0db870;
   --green-dark:  #0b8e56;
   --yellow:      #e6be2a;
   --yellow-dark: #c49c1f;
   --red:         #d93b4f;
 
-  --shadow-sm:  0 1px 6px rgba(10,10,15,0.06);
-  --shadow-md:  0 4px 12px rgba(10,10,15,0.06);
-  --shadow-lg:  0 8px 24px rgba(10,10,15,0.06);
-  --shadow-blue: 0 0 12px rgba(26,107,255,0.08);
+  /* Softer shadows for light mode */
+  --shadow-sm:   0 1px 6px rgba(10,10,15,0.06);
+  --shadow-md:   0 4px 12px rgba(10,10,15,0.06);
+  --shadow-lg:   0 8px 24px rgba(10,10,15,0.06);
+  --shadow-blue: 0 0 12px rgba(37,102,255,0.06);
 }
+
+/* Light-theme surface & form overrides to improve readability */
+.light-theme body { background: var(--black); color: var(--white); }
+.light-theme .card,
+.light-theme .modal-box,
+.light-theme .admin-main,
+.light-theme .cust-main { background: var(--gray-800); color: var(--white); }
+.light-theme .card { border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm); }
+.light-theme .data-table th { color: #333; }
+.light-theme .data-table td { color: #222; }
+
+/* Inputs / selects */
+.light-theme input, .light-theme select, .light-theme textarea, .light-theme .input {
+  background: var(--gray-100);
+  color: var(--white);
+  border: 1px solid var(--gray-200);
+}
+
+/* Navigation / sidebar adjustments */
+.light-theme .sidebar { background: #ffffff; border-right-color: rgba(10,10,15,0.06); }
+.light-theme .nav-item { color: var(--gray-600); }
+.light-theme .nav-item:hover { background: rgba(37,102,255,0.04); color: var(--blue); }
+.light-theme .nav-item.active { background: rgba(37,102,255,0.06); color: var(--blue); border: 1px solid rgba(37,102,255,0.12); }
 
 /* QR clarity fixes — improve contrast and crispness so scanners can read codes reliably */
 .my-qr, .qr-page, .qr-card, .qr-wrapper { display: block; text-align: center; }
