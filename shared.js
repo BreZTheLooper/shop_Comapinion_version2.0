@@ -60,9 +60,9 @@ function seedData() {
 
   /* Retailers (Admin manages these) */
   Store.set('retailers', [
-    { id:'R001', clientName:'Juan Dela Cruz',  storeName:"Juan's Grocery",    location:'Quezon City, Metro Manila', contact:'09171111111', gmail:'juan@gmail.com', plan:'premium', status:'active',    accessCode:'SC-PREM-001', joinDate:'2024-01-01', nextBilling:'2025-05-01' },
-    { id:'R002', clientName:'Maria Manalo',    storeName:'Manalo Supermart',   location:'Pasig City, Metro Manila',  contact:'09182222222', gmail:'maria.m@gmail.com', plan:'standard', status:'active', accessCode:'SC-STND-002', joinDate:'2024-03-15', nextBilling:'2025-05-15' },
-    { id:'R003', clientName:'Pedro Villanueva',storeName:'PV Mini Mart',       location:'Caloocan, Metro Manila',    contact:'09193333333', gmail:'pedro@gmail.com',   plan:'basic',    status:'expired', accessCode:'SC-BASC-003', joinDate:'2024-06-01', nextBilling:'2025-04-01' },
+    { id:'R001', clientName:'Juan Dela Cruz',  storeName:"Juan's Grocery",    location:'Quezon City, Metro Manila', contact:'09171111111', gmail:'juan@gmail.com', plan:'premium', status:'active',    accessCode:'SC-PREM-001', joinDate:'2024-01-01', nextBilling:'2026-06-01' },
+    { id:'R002', clientName:'Maria Manalo',    storeName:'Manalo Supermart',   location:'Pasig City, Metro Manila',  contact:'09182222222', gmail:'maria.m@gmail.com', plan:'standard', status:'active', accessCode:'SC-STND-002', joinDate:'2024-03-15', nextBilling:'2026-06-15' },
+    { id:'R003', clientName:'Pedro Villanueva',storeName:'PV Mini Mart',       location:'Caloocan, Metro Manila',    contact:'09193333333', gmail:'pedro@gmail.com',   plan:'basic',    status:'active', accessCode:'SC-BASC-003', joinDate:'2024-06-01', nextBilling:'2026-06-01' },
   ]);
 
   /* Subscription plans */
