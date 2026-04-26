@@ -1,22 +1,4 @@
-Shop Companion Landing Page
 
-intro interface - igigitna lahat. Then, add a color indicated base sa isinulat natin sa papel. 
-
-ex: 
-
-Admin - #1b2475
-Client - #50D119
-Cashier - #FF4008
------------------------------------------------------------------------ 
-
-Admin panel 
-
-Overview: paayos ako nung dashboard sa taas wag lalampas sa mismong box and then pa change ng font/text into thinner but not so thin. Yung sakto lang. 
-
-suggested fonts: 
-FonT Display: Black Ops, Calisto MT
-Font Body: Courier New, Georgia
-Font for Numbers: Digital
 
 
 retailer opt: add transaction record/history kung kelan nagbayad, time ng nagbayad. Kumbaga e yung record nung transaction for plan for those client/retailer na na avail. Kumbaga proof or work/record. 
@@ -64,3 +46,28 @@ pop up notification sya.
 
 --------------------------------------------------------------------------------
 Customer: 
+
+-------------------------------------------------------------------------------
+
+display interface 
+- pakichange ng font doon sa may option ng admin, client, cashier
+- Pakilakihan ang logo ng kaunti 
+- pati mga text pakilakihan font kaunti 
+
+next, terms and conditions pa add 
+
+admin panl/dashboard - nalampas parin sa box yung text, paki center aligned nalang ako nung mga text sa right side and pa add ng proper spacing between text and numbers. 
+- pakilakihan digit size as well as text size 
+- change font into a more readable one. yung part ng font for text 
+- activity lang ng client ang nakikita (notifications, reminders)
+- change icon of trash into X
+-change icon of pause into warning na may triangle na naka yellow 
+
+
+
+
+
+
+
+
+
