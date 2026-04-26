@@ -406,36 +406,48 @@ const Scanner = {
   _currentContext: null,  // tracks what triggered the scan
   _onDecode: null,
 
-  async start(videoEl, onDecode) {
+  /**
+   * Start scanner
+   * videoEl: HTMLVideoElement
+   * onDecode: callback(text)
+   * opts: { formats: [ZXing.BarcodeFormat...], interval: number(ms), facingMode: 'environment'|'user' }
+   */
+  async start(videoEl, onDecode, opts = {}) {
     if (this.active) await this.stop();
     this._onDecode = onDecode;
     try {
       if (!window.ZXing) { toast('Scanning library not loaded', 'error'); return; }
       const ZXing = window.ZXing;
       const hints = new Map();
-      hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
-        ZXing.BarcodeFormat.QR_CODE,
-        ZXing.BarcodeFormat.EAN_13,
-        ZXing.BarcodeFormat.EAN_8,
-        ZXing.BarcodeFormat.CODE_128,
-        ZXing.BarcodeFormat.CODE_39,
-        ZXing.BarcodeFormat.UPC_A,
-        ZXing.BarcodeFormat.UPC_E,
-        ZXing.BarcodeFormat.DATA_MATRIX,
-      ]);
+      const formats = opts.formats || [ ZXing.BarcodeFormat.QR_CODE, ZXing.BarcodeFormat.DATA_MATRIX, ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.EAN_13 ];
+      hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);
       hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-      this.reader = new ZXing.BrowserMultiFormatReader(hints, 500); // 500ms decode interval
+
+      const interval = typeof opts.interval === 'number' ? opts.interval : 250; // faster polling by default
+      this.reader = new ZXing.BrowserMultiFormatReader(hints, interval);
       this.active = true;
 
-      await this.reader.decodeFromVideoDevice(null, videoEl, (result, err) => {
-        if (result && this._onDecode) {
-          const text = result.getText();
-          this._onDecode(text);
-        }
-      });
+      // Choose facing mode if requested — let the browser pick deviceId when null but set constraints
+      const constraints = { video: { facingMode: opts.facingMode || 'environment' } };
+
+      // Attempt to get a video device matching constraints first (safer on mobiles)
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        // attach stream to video element so ZXing can read from it
+        try { videoEl.srcObject = stream; videoEl.play().catch(()=>{}); } catch(e) {}
+        // decodeFromVideoElement will use the attached stream
+        this.reader.decodeFromVideoElement(videoEl, (result, err) => {
+          if (result && this._onDecode) this._onDecode(result.getText());
+        });
+      } catch (e) {
+        // fallback to decodeFromVideoDevice which will prompt browser device selection
+        await this.reader.decodeFromVideoDevice(null, videoEl, (result, err) => {
+          if (result && this._onDecode) this._onDecode(result.getText());
+        });
+      }
     } catch (err) {
       console.warn('Scanner error:', err);
-      if (err.name === 'NotAllowedError') {
+      if (err && err.name === 'NotAllowedError') {
         toast('Camera permission denied. Use manual entry below.', 'error');
       } else {
         toast('Camera unavailable — use manual entry', 'warning');

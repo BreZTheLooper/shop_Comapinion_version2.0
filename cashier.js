@@ -55,10 +55,23 @@ function renderTodayOrders() {
 function startCheckoutScan() {
   const vid = document.getElementById('checkoutVideo');
   document.getElementById('checkoutScanStatus').textContent = 'Scanning customer QR…';
+  // Prefer QR scanning and environment camera for checkout
+  const ZXing = window.ZXing;
+  const opts = {};
+  if (ZXing) opts.formats = [ZXing.BarcodeFormat.QR_CODE, ZXing.BarcodeFormat.DATA_MATRIX];
+  opts.facingMode = 'environment';
+  opts.interval = 180; // faster decode loop for checkout
+
   Scanner.start(vid, (code) => {
-    Scanner.stop();
+    try {
+      // Stop scanner briefly to avoid duplicate reads while processing
+      Scanner.stop();
+    } catch(e){}
     document.getElementById('checkoutScanStatus').textContent = `Scanned: ${code.slice(0,30)}…`;
     processCustomerQR(code);
+  }, opts).catch(err=>{
+    console.warn('Checkout scanner failed to start:', err);
+    document.getElementById('checkoutScanStatus').textContent = 'Camera unavailable — use manual entry';
   });
 }
 
